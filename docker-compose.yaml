@@ -1,0 +1,44 @@
+version: '3.7'
+services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    restart: always
+    ports:
+      - 8088:80
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - laravel
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: db_polimundo
+      MYSQL_USER: backend
+      MYSQL_PASSWORD: DB_pol290622
+      MYSQL_ROOT_PASSWORD: DB_pol290622 
+    ports:
+      - 33069:3306
+    volumes:
+      - ./mysql:/var/lib/mysql
+    networks:
+      - laravel
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - 9000:80
+    networks:
+      - laravel
+networks:
+  laravel:
